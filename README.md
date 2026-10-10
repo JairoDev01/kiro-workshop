@@ -6,6 +6,20 @@ React SPA with AWS Cognito authentication (Managed Login v2, Authorization Code
 Flow with PKCE), served via CloudFront + private S3, with an API Gateway HTTP API
 protected by a Cognito JWT authorizer. Infrastructure is managed with AWS CDK.
 
+## Access the AWS Event
+
+Join the AWS Workshop Studio event to access the sandbox account provisioned for this workshop:
+
+👉 **[Join the AWS event](https://catalog.us-east-1.prod.workshops.aws/join?access-code=9ac1-00e3fc-37)**
+
+If the button doesn't work, copy and paste this URL into your browser:
+
+```
+https://catalog.us-east-1.prod.workshops.aws/join?access-code=9ac1-00e3fc-37
+```
+
+Follow the on-screen instructions to join, then use the credentials from your sandbox in the **AWS Access Keys** section of `.env` during setup.
+
 ## Workspace Structure
 
 | Path | Package | Description |

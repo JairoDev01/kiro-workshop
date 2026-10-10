@@ -7,6 +7,20 @@ código de autorización con PKCE), servida a través de CloudFront + S3 privado
 con una HTTP API de API Gateway protegida por un autorizador JWT de Cognito. La
 infraestructura se gestiona con AWS CDK.
 
+## Acceder al evento de AWS
+
+Únete al evento de AWS Workshop Studio para acceder a la cuenta sandbox aprovisionada para este workshop:
+
+👉 **[Unirse al evento de AWS](https://catalog.us-east-1.prod.workshops.aws/join?access-code=9ac1-00e3fc-37)**
+
+Si el botón no funciona, copia y pega esta URL en tu navegador:
+
+```
+https://catalog.us-east-1.prod.workshops.aws/join?access-code=9ac1-00e3fc-37
+```
+
+Sigue las instrucciones en pantalla para unirte, y luego usa las credenciales de tu sandbox en la sección de **AWS Access Keys** de `.env` durante el setup.
+
 ## Estructura del workspace
 
 | Ruta | Paquete | Descripción |
