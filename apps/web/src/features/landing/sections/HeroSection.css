@@ -1,0 +1,378 @@
+/*
+ * HeroSection styles.
+ *
+ * Reuses the global design tokens from styles/tokens.css (colors, spacing,
+ * radii, typography). The hero uses a light, near-white local background (not
+ * the shared blue --landing-hero-gradient, which stays blue for the final-CTA
+ * bookend) with faint brand-tint washes and a decorative brand-colored motif.
+ * All colors come from existing tokens only. No new dependency and no new
+ * font-loading mechanism.
+ */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  /*
+   * Content-first vertical rhythm: a slim top band plus a tightened editorial
+   * block keep the headline + CTAs above the fold on common laptop/desktop
+   * resolutions (1366x768, 1440x900). The large top padding is trimmed so the
+   * masthead sits high and the section sizes to its content (no forced 100vh).
+   */
+  /*
+   * Top padding is raised by 100px (16px base -> 116px) purely to absorb the
+   * -100px margin-top applied to .hero__header below. The net effect is that
+   * the masthead strip is visually raised ~100px while the logo stays inside
+   * the hero's padding box, so the hero's overflow:hidden never clips it at
+   * desktop or mobile. Horizontal/bottom padding is unchanged.
+   */
+  padding: calc(var(--space-4) + 100px) var(--space-6) var(--space-7);
+  color: var(--color-text-primary);
+  /*
+   * Light, near-white hero surface (hero-local; the shared blue
+   * --landing-hero-gradient is intentionally NOT used here so the final-CTA
+   * bookend can stay blue). A near-white base (--color-light-bg) carries two
+   * faint radial brand-tint washes biased to the corners so the surface reads
+   * as a clean light plate with a hint of brand color — never blue. Dark ink
+   * text (set below per element) keeps AA contrast on this light background.
+   */
+  background:
+    radial-gradient(
+      120% 90% at 100% 100%,
+      rgba(22, 178, 238, 0.1) 0%,
+      rgba(22, 178, 238, 0) 55%
+    ),
+    radial-gradient(
+      110% 80% at 0% 0%,
+      rgba(4, 82, 199, 0.06) 0%,
+      rgba(4, 82, 199, 0) 50%
+    ),
+    var(--color-light-bg);
+}
+
+/* Decorative motif layer, hidden from assistive tech via aria-hidden. */
+.hero__motif {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/*
+ * Editorial wrapper: a slim logo masthead strip stacked above the content grid.
+ * Capped to the shared --landing-max-width so the composition stays aligned
+ * with the other landing sections. The gap is tightened (space-5) so the strip
+ * reads as connected to — but clearly secondary to — the editorial block.
+ */
+.hero__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--landing-max-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/*
+ * Logo masthead strip: a slim, left-aligned top band — NOT the hero's
+ * centerpiece. Minimal vertical padding plus a subtle hairline separator
+ * (the shared card border) make it read as a quiet masthead above the
+ * editorial content, which carries the visual weight.
+ */
+.hero__header {
+  display: flex;
+  justify-content: flex-start;
+  /*
+   * Raise the masthead strip up by 100px. The hero's top padding was increased
+   * by a matching 100px (see .hero) specifically to absorb this negative
+   * margin, so the logo rides inside the hero's padding box and is never
+   * clipped by the hero's overflow:hidden at desktop or mobile. Horizontal
+   * alignment stays left (flex-start).
+   */
+  margin-top: -100px;
+}
+
+/*
+ * Editorial grid: single column on mobile; two columns from the mobile
+ * breakpoint up. minmax(0, …) tracks let long words/children shrink instead of
+ * forcing horizontal overflow.
+ */
+.hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  /*
+   * Top-align the columns so the editorial reading order sits high in the fold
+   * instead of being vertically centered (which pushed the headline/CTAs low).
+   */
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .hero__grid {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+}
+
+/*
+ * Left column: the reading order. The h1 is the dominant element; the eyebrow
+ * and copy are subordinate. Deliberate rhythm comes from --space-* tokens.
+ */
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  text-align: left;
+  min-width: 0;
+}
+
+/*
+ * Right column: one restrained visual-support block. min-width:0 keeps it from
+ * forcing overflow in the grid track.
+ */
+.hero__aside {
+  min-width: 0;
+}
+
+/*
+ * Compact "foundation" card: a quiet, additive summary of the real AWS base as
+ * a short labeled list (service -> one-word role). Calm by design — a single
+ * low-opacity surface with the existing card border/radius, NOT a card grid,
+ * glassmorphism, extra gradient, or animation. Built only from existing tokens.
+ * On the light hero it is a plain white surface with the shared card border and
+ * shadow so it reads as a quiet raised panel while dark labels stay readable.
+ */
+.hero__foundation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-6);
+  border: var(--card-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-white);
+  box-shadow: var(--card-shadow);
+}
+
+.hero__foundation-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary-blue);
+}
+
+/* Reset default <dl> indentation; rhythm comes from --space-* only. */
+.hero__foundation-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/*
+ * Each row pairs a service (term) with its one-word role (role). The term is
+ * emphasized; the role is quieter, keeping the list subordinate to the headline.
+ */
+.hero__foundation-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.hero__foundation-term {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.hero__foundation-role {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--font-size-helper);
+  color: var(--color-text-secondary);
+}
+
+/*
+ * Logo zone: a compact supporting mark at the left of the masthead strip, not
+ * a centerpiece. The logo sits directly on the light hero with no capsule.
+ * Minimal top padding keeps the strip slim; the <img>, its alt, and intrinsic
+ * aspect ratio are untouched.
+ */
+.hero__logo-zone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 100%;
+  padding: var(--space-1) 0;
+}
+
+.hero__logo {
+  display: block;
+  width: auto;
+  max-width: min(100%, 200px);
+  height: auto;
+}
+
+.hero__context {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary-blue);
+}
+
+/*
+ * The h1 is the dominant element of the hero. A slightly heavier top end on the
+ * clamp and tight heading line-height let it anchor the left column while the
+ * eyebrow and copy stay subordinate. A small top margin tightens it to the
+ * eyebrow for a deliberate eyebrow -> headline rhythm.
+ */
+.hero__title {
+  margin: 0;
+  margin-top: var(--space-1);
+  color: var(--color-deep-blue);
+  font-size: clamp(2.1rem, 5.2vw, 3.5rem);
+  line-height: var(--line-height-heading);
+  font-weight: var(--font-weight-semibold);
+}
+
+.hero__copy {
+  margin: 0;
+  margin-top: var(--space-2);
+  max-width: 56ch;
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-body);
+  color: var(--color-text-primary);
+}
+
+.hero__error {
+  width: 100%;
+  max-width: 480px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+/*
+ * Primary CTA: the dominant action in the hero. On the new light surface a
+ * filled brand-blue button with white text is the most prominent control (white
+ * text on --color-primary-blue reads well above AA); the shadow and a small
+ * hover lift reinforce that dominance over the quiet secondary link. Built from
+ * existing tokens only; still a semantic <button> wired to the single
+ * signinRedirect() path.
+ */
+.hero__cta {
+  padding: var(--space-3) var(--space-6);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: var(--color-primary-blue);
+  color: var(--color-white);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.hero__cta:hover {
+  background: var(--color-deep-blue);
+  transform: translateY(-1px);
+}
+
+.hero__cta:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+  outline-offset: 2px;
+}
+
+/*
+ * Secondary CTA: a quiet in-page scroll link to #workshop, deliberately
+ * subordinate to the primary button — no fill, lighter weight, underline-only
+ * affordance. The trailing arrow is decorative (aria-hidden) and nudges a touch
+ * on hover to echo the scroll intent without competing with the primary action.
+ */
+.hero__secondary {
+  color: var(--color-primary-blue);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.hero__secondary:hover {
+  color: var(--color-deep-blue);
+}
+
+.hero__secondary:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+  outline-offset: 2px;
+  border-radius: var(--border-radius-sm);
+}
+
+.hero__secondary-arrow {
+  display: inline-block;
+  transition: transform var(--transition-fast);
+}
+
+.hero__secondary:hover .hero__secondary-arrow {
+  transform: translateX(2px);
+}
+
+/*
+ * Foundation strip: a flat, non-interactive list of token-styled chips sitting
+ * last in the left column. Deliberately quiet so it stays subordinate to the
+ * headline and CTAs — small helper-sized text, a low-opacity surface with the
+ * existing card border, small radius, and wrapping so it never forces overflow.
+ * Reset default <ul> list markers/indentation; rhythm comes from --space-*.
+ */
+.hero__stack {
+  margin: 0;
+  margin-top: var(--space-5);
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.hero__stack-chip {
+  padding: var(--space-1) var(--space-3);
+  border: var(--card-border);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-bg-muted);
+  font-family: var(--font-body);
+  font-size: var(--font-size-helper);
+  line-height: var(--line-height-helper);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}

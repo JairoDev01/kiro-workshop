@@ -1,0 +1,54 @@
+{
+  "name": "kiro-essentials",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "infra"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w @kiro-essentials/web",
+    "build:web": "npm run build -w @kiro-essentials/web",
+    "build:api": "npm run build -w @kiro-essentials/api",
+    "build:infra": "npm run build -w @kiro-essentials/infra",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "cdk:synth": "npm run synth -w @kiro-essentials/infra",
+    "cdk:deploy": "npm run cdk -- deploy --all -w @kiro-essentials/infra",
+    "init": "node scripts/init.mjs",
+    "setup": "node scripts/setup.mjs",
+    "deploy": "node scripts/deploy.mjs",
+    "deploy:frontend": "node scripts/deploy-frontend.mjs"
+  },
+  "dependencies": {
+    "oidc-client-ts": "^3.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-oidc-context": "^3.2.0",
+    "react-router-dom": "^6.28.0"
+  },
+  "overrides": {
+    "@aws-sdk/middleware-sdk-s3": "3.972.77",
+    "@aws-sdk/credential-provider-http": "3.972.74"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-cloudformation": "3.1091.0",
+    "@aws-sdk/client-cloudfront": "3.1091.0",
+    "@aws-sdk/client-cognito-identity-provider": "3.1091.0",
+    "@aws-sdk/client-s3": "3.1091.0",
+    "@aws-sdk/client-sts": "3.1091.0",
+    "@aws-sdk/lib-storage": "3.1091.0",
+    "mime-types": "^2.1.35",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
+    "typescript": "~5.6.2",
+    "vite": "^5.4.0",
+    "vitest": "^2.1.0"
+  }
+}

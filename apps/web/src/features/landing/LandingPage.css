@@ -1,0 +1,37 @@
+/*
+ * LandingPage styles.
+ *
+ * The landing is a vertical narrative composed of sections. Section-level
+ * styling (gradient, layout, typography) lives in each section's co-located
+ * CSS. This file only owns the page-level wrapper. Reuses the global design
+ * tokens from styles/tokens.css. No new dependency and no new font-loading
+ * mechanism.
+ */
+
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-white);
+  overflow-x: hidden;
+}
+
+/*
+ * Horizontal-overflow guards shared by every section.
+ *
+ * The wrapper clips any residual horizontal overflow, but we also prevent it at
+ * the source so content never needs clipping on legitimate layouts: long,
+ * unbreakable tokens (URLs, long compound words) in headings or copy wrap
+ * instead of forcing a line wider than the viewport. This complements the
+ * per-section clamp() typography and keeps every breakpoint (desktop, laptop,
+ * tablet, mobile) free of horizontal scrolling.
+ */
+.landing :where(h1, h2, h3, h4, p, li, a, blockquote, figcaption) {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Media never exceeds its column and keeps its intrinsic aspect ratio. */
+.landing :where(img, svg) {
+  max-width: 100%;
+}

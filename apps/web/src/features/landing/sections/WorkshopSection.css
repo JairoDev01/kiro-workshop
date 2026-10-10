@@ -1,0 +1,67 @@
+/*
+ * WorkshopSection styles.
+ *
+ * Reuses the global design tokens from styles/tokens.css (colors, spacing,
+ * radii, typography). Restrained editorial layout with generous whitespace on
+ * a light background, consistent with the existing landing visual language. No
+ * new dependency and no new font-loading mechanism.
+ */
+
+.workshop {
+  width: 100%;
+  padding: var(--space-9) var(--space-6);
+  background: var(--color-light-bg);
+  color: var(--color-text-primary);
+}
+
+.workshop__inner {
+  width: 100%;
+  max-width: var(--landing-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.workshop__eyebrow {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary-blue);
+}
+
+.workshop__title {
+  margin: 0;
+  color: var(--color-dark-navy);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  line-height: var(--line-height-heading);
+}
+
+.workshop__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.workshop__body p {
+  margin: 0;
+  max-width: 72ch;
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}
+
+/* Lead paragraph gets slightly stronger emphasis for editorial hierarchy. */
+.workshop__body p:first-child {
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 768px) {
+  .workshop {
+    padding: var(--space-8) var(--space-5);
+  }
+}

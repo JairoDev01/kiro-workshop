@@ -1,0 +1,599 @@
+/*
+ * WorkspacePage layout.
+ *
+ * Shell styling (task 3.1): establishes the page scaffold — a header band at
+ * --topbar-height and a centered <main> content column — reusing the global
+ * design tokens from styles/tokens.css (spacing, colors, type scale,
+ * --topbar-height, breakpoint). The authenticated surface is intentionally
+ * calmer than the landing hero: a solid/near-solid header surface, no full hero
+ * gradient. Detailed header, account menu, card, and section styling are added
+ * in later tasks (4.x, 5.x, 6.x, 7.x); this file only provides the composition
+ * scaffold so the page renders coherently.
+ */
+
+.workspace {
+  min-height: 100vh;
+  background: var(--color-light-bg);
+  color: var(--color-text-primary);
+  /*
+   * Secondary text sitting on the muted surface (--color-bg-muted #F3F4F6).
+   * The shared --color-text-secondary (#64748B) only reaches ~4.32:1 on that
+   * muted fill, which is below the WCAG AA 4.5:1 minimum for normal-size text
+   * (Requirement 19.5). A slightly darker sibling of the same slate hue
+   * (#475569, ~6.9:1 on the muted fill) keeps the restrained "secondary" tone
+   * while clearing AA. Scoped to this feature so the shared token — which is
+   * used app-wide and passes AA on white/near-white backgrounds — is unchanged.
+   */
+  --workspace-text-secondary-on-muted: #475569;
+  /*
+   * Defensive horizontal-overflow guard (Requirement 18.1). The identifier
+   * truncates and the foundation chips wrap, so content should never exceed the
+   * viewport; this keeps a stray wide descendant from introducing a horizontal
+   * scrollbar on narrow screens.
+   */
+  overflow-x: hidden;
+}
+
+/*
+ * Application header (Requirements 3, 4, 17, 18).
+ *
+ * A calm, near-solid surface deliberately lighter than the landing hero
+ * gradient: a flat white band with a single faint brand-tint wash biased to the
+ * right edge (composed from existing palette tokens, no new values) plus a hair
+ * line bottom border. This keeps the authenticated side operational rather than
+ * expressive. Fixed to --topbar-height so content aligns to the shared shell.
+ */
+.workspace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  height: var(--topbar-height);
+  padding: 0 var(--space-6);
+  background:
+    radial-gradient(
+      120% 180% at 100% 0%,
+      rgba(22, 178, 238, 0.05) 0%,
+      rgba(22, 178, 238, 0) 60%
+    ),
+    var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Left: compact workshop identity. */
+.workspace-header__identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+/*
+ * Small brand accent mark (no icon dependency): a rounded square carrying the
+ * blue -> cyan brand gradient, scaled down so it reads cleanly at header size
+ * and stays lighter than the full landing hero treatment.
+ */
+.workspace-header__brand-mark {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--border-radius-sm);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-blue) 0%,
+    var(--color-bright-cyan) 100%
+  );
+}
+
+.workspace-header__app-name {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-card-title);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.workspace-header__account {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+/*
+ * Identifier text next to the account control on desktop. Truncates rather than
+ * pushing the account control off-screen when the identifier (e.g. a long
+ * email) is wide.
+ */
+.workspace-header__identifier {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-size-label);
+  color: var(--color-text-secondary);
+}
+
+/*
+ * Narrow screens (<= --breakpoint-mobile, 768px): hide the identifier text to
+ * keep the header uncluttered; the account control stays available so logout
+ * remains easy to reach (Requirement 18.3).
+ */
+@media (max-width: 768px) {
+  .workspace-header {
+    padding: 0 var(--space-4);
+  }
+
+  .workspace-header__identifier {
+    display: none;
+  }
+
+  /*
+   * Reduce the main column's horizontal padding on narrow screens so content
+   * keeps comfortable breathing room without wasting width (Requirement 18.4);
+   * the generous var(--space-6) desktop gutter is tightened to var(--space-4),
+   * matching the header's narrow-screen gutter.
+   */
+  .workspace__main {
+    padding: var(--space-6) var(--space-4);
+  }
+}
+
+/* Centered content column for the main workspace sections. */
+.workspace__main {
+  width: 100%;
+  max-width: var(--landing-max-width);
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+}
+
+/*
+ * Account menu (Requirements 5, 6, 7, 18, 19).
+ *
+ * A compact circular avatar <button> trigger and the small popover it opens.
+ * The popover reuses the shared dropdown tokens (--dropdown-shadow,
+ * --dropdown-radius) and existing palette/spacing tokens so it stays consistent
+ * with the rest of the app. No icon dependency: the avatar is a CSS circle
+ * carrying the brand gradient with the identifier initial. Positioning is
+ * relative to the trigger via the .account-menu wrapper.
+ */
+.account-menu {
+  position: relative;
+  flex: none;
+}
+
+.account-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Circular avatar carrying the brand gradient + the identifier initial. */
+.account-menu__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-blue) 0%,
+    var(--color-bright-cyan) 100%
+  );
+  color: var(--color-white);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+/* Visible focus state on the trigger (Requirements 5.4, 19.3). */
+.account-menu__trigger:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+  outline-offset: 2px;
+}
+
+/*
+ * Popover anchored to the trigger's bottom-right. Uses the shared dropdown
+ * tokens so it matches other dropdowns in the app.
+ */
+.account-menu__popover {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  z-index: 10;
+  min-width: 180px;
+  padding: var(--space-1);
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--dropdown-radius);
+  box-shadow: var(--dropdown-shadow);
+}
+
+/* The single menu item: Cerrar sesión. */
+.account-menu__item {
+  display: block;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--font-size-label);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.account-menu__item:hover {
+  background: var(--color-bg-muted);
+}
+
+/* Visible focus state on the menu item (Requirement 19.3). */
+.account-menu__item:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+  outline-offset: -2px;
+  background: var(--color-bg-muted);
+}
+
+/*
+ * Welcome section (Requirements 13, 17, 19).
+ *
+ * The opening block of the authenticated surface. It owns the SINGLE page `h1`
+ * (`Bienvenido al workspace`) followed by one concise line of supporting copy.
+ * Deliberately restrained and calmer than the landing hero: no gradient, no
+ * card, no decorative chrome — just the page title and a measured line of body
+ * text sized from the shared type scale so the hierarchy reads clearly. Copy
+ * width is capped for comfortable reading on wide viewports.
+ */
+.welcome-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.welcome-section h1 {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.welcome-section p {
+  margin: 0;
+  max-width: 60ch;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body-text);
+  color: var(--color-text-secondary);
+}
+
+/*
+ * Foundation strip (Requirements 14, 16, 17).
+ *
+ * A SECONDARY, visually quiet band listing the technical foundation (React,
+ * Cognito, API Gateway, ...) as static context only. It is deliberately the
+ * calmest section on the page: no card, no shadow, no prominent grid, and — most
+ * importantly — NO fake runtime status badges (no coloured dots, no "connected"
+ * indicators). Only the header (auth state) and ProtectedApiCard (/hello
+ * connectivity) carry real runtime status; this list is pure context.
+ *
+ * The heading is a small, muted, uppercase label so it reads as a secondary
+ * aside rather than a primary section title. Items are restrained inline chips
+ * that wrap, reusing the shared palette/spacing/radius tokens — no new values,
+ * no dashboard aesthetics.
+ */
+.foundation-strip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.foundation-strip__heading {
+  margin: 0;
+  font-size: var(--font-size-helper);
+  line-height: var(--line-height-helper);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.foundation-strip__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.foundation-strip__item {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-bg-muted);
+  /* AA-safe secondary tone on the muted chip fill (Requirement 19.5). */
+  color: var(--workspace-text-secondary-on-muted);
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  white-space: nowrap;
+}
+
+/*
+ * Workspace empty state (Requirements 15, 16, 17, 19).
+ *
+ * The primary workspace region, presented as a clean, intentional empty state
+ * rather than a dashboard. A single calm, centered block framed by a dashed
+ * border communicates that the surface is deliberately ready for the next
+ * workshop feature — no fake resource lists, charts, metrics, navigation
+ * modules, or placeholder business data. All values come from the shared design
+ * tokens (spacing, radii, palette, type scale); no new tokens, no card shadow,
+ * no gradient, no dashboard chrome. The dashed outline + muted wash reads as an
+ * intentional placeholder slot, keeping it distinct from the solid foundation
+ * chips above while staying restrained and professional.
+ */
+.workspace-empty-state {
+  display: flex;
+}
+
+.workspace-empty-state__frame {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 220px;
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--border-radius-lg);
+  background: var(--color-bg-muted);
+}
+
+.workspace-empty-state__title {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.workspace-empty-state__copy {
+  margin: 0;
+  max-width: 48ch;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body-text);
+  /* AA-safe secondary tone on the muted empty-state fill (Requirement 19.5). */
+  color: var(--workspace-text-secondary-on-muted);
+}
+
+/*
+ * Narrow screens (<= --breakpoint-mobile, 768px): reduce the vertical presence
+ * and inner padding so the empty state stays proportionate and avoids excess
+ * whitespace on small viewports, while remaining a clear intentional region.
+ */
+@media (max-width: 768px) {
+  .workspace-empty-state__frame {
+    min-height: 180px;
+    padding: var(--space-7) var(--space-4);
+  }
+}
+
+/*
+ * Protected API card (Requirements 8, 9, 10, 11, 12, 19).
+ *
+ * The card automatically verifies the protected `GET /hello` endpoint on load
+ * and reports an honest loading / success / failure status. Baseline styling
+ * (task 6.1): establishes the section rhythm, the supporting copy, and — most
+ * importantly for accessibility — status that is conveyed with text AND a
+ * non-color shape/weight marker, never color alone (Requirement 19.4). Each
+ * state marker has a DISTINCT shape (square = loading, circle = success,
+ * triangle = error) so the status is distinguishable without perceiving color.
+ * The detailed presentation polish (final labels, message framing, retry
+ * styling) is refined in task 6.2; this uses only shared tokens.
+ */
+.protected-api-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.protected-api-card__supporting {
+  margin: 0;
+  max-width: 60ch;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body-text);
+  color: var(--color-text-secondary);
+}
+
+.protected-api-card__status {
+  display: flex;
+  flex-direction: column;
+}
+
+.protected-api-card__state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+/* Status label line: marker + bold text so meaning carries by weight too. */
+.protected-api-card__state--loading,
+.protected-api-card__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+/*
+ * Shape markers (no icon dependency, no color-only signalling). Each phase uses
+ * a different geometric shape so sighted users who cannot distinguish colour
+ * can still tell the states apart.
+ */
+.protected-api-card__marker {
+  flex: none;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+}
+
+/* Loading: hollow square. */
+.protected-api-card__marker--loading {
+  border: 2px solid var(--color-text-secondary);
+  border-radius: 2px;
+}
+
+/* Success: filled circle. */
+.protected-api-card__marker--success {
+  border-radius: 50%;
+  background: var(--color-text-primary);
+}
+
+/* Error: triangle built from borders. */
+.protected-api-card__marker--error {
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 12px solid var(--color-text-primary);
+  background: transparent;
+}
+
+.protected-api-card__message {
+  margin: 0;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body-text);
+  color: var(--color-text-primary);
+}
+
+.protected-api-card__note {
+  margin: 0;
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  color: var(--color-text-secondary);
+}
+
+/* Manual retry after a failure (optional per Requirement 12.4). */
+.protected-api-card__retry {
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--font-size-label);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.protected-api-card__retry:hover {
+  background: var(--color-bg-muted);
+}
+
+.protected-api-card__retry:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+  outline-offset: 2px;
+}
+
+/*
+ * Received-elements region (success branch).
+ *
+ * Renders the `/hello` response `data` items as a modern, content-focused card
+ * grid — distinct from the status markers above, which signal runtime state.
+ * These cards are plain content (not status), so the brand gradient on the id
+ * badge is decorative and meaning never relies on color alone. All values come
+ * from the shared design tokens; no new tokens or dependencies are introduced.
+ */
+.protected-api-card__items-region {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* Small uppercase helper heading, consistent with .foundation-strip__heading. */
+.protected-api-card__items-heading {
+  margin: 0;
+  font-size: var(--font-size-helper);
+  line-height: var(--line-height-helper);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* Responsive card grid. */
+.protected-api-card__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Individual item card. */
+.protected-api-card__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-white);
+  box-shadow: var(--card-shadow);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.protected-api-card__item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 16px rgba(15, 29, 41, 0.14);
+}
+
+/*
+ * Id badge: a rounded square carrying the blue -> cyan brand gradient (the same
+ * gradient used by the header brand-mark and the account avatar in this file).
+ */
+.protected-api-card__item-badge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--border-radius-sm);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-blue) 0%,
+    var(--color-bright-cyan) 100%
+  );
+  color: var(--color-white);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+}
+
+/* Item name: the primary label of each card. */
+.protected-api-card__item-name {
+  min-width: 0;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}

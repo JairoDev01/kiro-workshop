@@ -1,0 +1,178 @@
+/* Global reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+}
+
+:root {
+  /* Colors - kiro-essentials Palette */
+  --color-dark-navy: #0F1D29;
+  --color-deep-blue: #02176E;
+  --color-primary-blue: #0452C7;
+  --color-bright-cyan: #16B2EE;
+  --color-teal-cyan: #0CC0DB;
+  --color-light-bg: #F7FAFC;
+  --color-white: #FFFFFF;
+  --color-sidebar-bg: #22244E;
+
+  /*
+   * Product-level neutral tokens (design section 16).
+   * These are pragmatic product/UI neutrals, NOT corporate-manual brand colors.
+   * Values match the dominant inline fallbacks already used across feature CSS
+   * (e.g. var(--color-text-secondary, #64748b)) so formalizing them shifts nothing visually.
+   * Semantic error/warning/success/destructive/status colors
+   * are intentionally kept separate and are not part of this neutral set.
+   */
+  --color-text-primary: #1E293B;
+  --color-text-secondary: #64748B;
+  --color-border: #E5E7EB;
+  --color-bg-muted: #F3F4F6;
+
+  /* Spacing (4px base grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+
+  /* Typography */
+  /*
+   * Corporate font role tokens (design section 15).
+   * Montserrat (headings/primary navigation) and Source Sans Pro (body/labels/helper)
+   * are loaded once globally via index.html. tokens.css is the single place mapping
+   * fonts to roles. system-ui fallbacks render before the fonts load (mitigates FOUT).
+   */
+  --font-heading: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-body: 'Source Sans Pro', system-ui, -apple-system, sans-serif;
+  /* Legacy alias kept for backward compatibility; maps to the body role. */
+  --font-family: var(--font-body);
+
+  --font-size-base: 16px;
+  --font-size-sm: 14px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 32px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --line-height-body: 1.5;
+  --line-height-heading: 1.2;
+
+  /*
+   * Product-level type scale (design section 15, Requirement 10.3–10.6).
+   * Documented as a product decision, not corporate-manual values.
+   * Headings/nav use Montserrat (--font-heading); body/labels/helper use
+   * Source Sans Pro (--font-body). Closest loaded weight is used where an exact
+   * weight is unavailable (Montserrat 500/600; Source Sans Pro 400/600).
+   */
+  /* Page title: Montserrat 28px / ~34px / 600 */
+  --font-size-page-title: 28px;
+  --line-height-page-title: 34px;
+  /* Section title: Montserrat 20px / ~28px / 600 */
+  --font-size-section-title: 20px;
+  --line-height-section-title: 28px;
+  /* Card / subsection title: Montserrat 16px / ~24px / 600 */
+  --font-size-card-title: 16px;
+  --line-height-card-title: 24px;
+  /* Primary navigation: Montserrat 14–15px / ~20px / 500 */
+  --font-size-nav: 15px;
+  --line-height-nav: 20px;
+  /* Body / content: Source Sans Pro 16px / ~24px / 400 */
+  --font-size-body: 16px;
+  --line-height-body-text: 24px;
+  /* Labels: Source Sans Pro 14px / ~20px / 400 (600 only where hierarchy needs) */
+  --font-size-label: 14px;
+  --line-height-label: 20px;
+  /* Secondary / helper: Source Sans Pro 13–14px / ~18–20px / 400 */
+  --font-size-helper: 13px;
+  --line-height-helper: 18px;
+
+  /* Layout */
+  --sidebar-width: 228px;
+  --sidebar-collapsed-width: 72px;
+  --topbar-height: 64px;
+
+  /* Borders & Shadows */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --card-border: 1px solid rgba(15, 29, 41, 0.15);
+  --card-shadow: 0px 2px 4px rgba(15, 29, 41, 0.1);
+
+  /* Dropdown */
+  --dropdown-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --dropdown-radius: 8px;
+
+  /* Breakpoints (for reference in media queries) */
+  --breakpoint-mobile: 768px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+
+  /*
+   * Landing presentational tokens (Requirement 12.3, 12.5).
+   * Added only where a genuine duplication existed across the landing sections,
+   * following existing token conventions. Composed from existing color tokens;
+   * no new palette values are introduced.
+   */
+  /* Shared max content-column width for the landing sections. */
+  --landing-max-width: 980px;
+  /*
+   * Blue -> cyan brand gradient shared by the hero and final-CTA bookends.
+   * The accessibility-tuned stops (primary-blue extended to 75%, bright-cyan
+   * pushed past the visible edge to 115%) keep centered copy over deep/primary
+   * blue (>= 6.6:1); the light cyan only accents the far corner. Tokenizing it
+   * keeps both sections in sync.
+   */
+  --landing-hero-gradient: linear-gradient(
+    135deg,
+    var(--color-deep-blue) 0%,
+    var(--color-primary-blue) 75%,
+    var(--color-bright-cyan) 115%
+  );
+}
+
+/*
+ * Shell heading roles (design section 15, Requirement 10.3, 10.5, 10.6).
+ * Applied globally via the shared stylesheet so shell headings inherit the
+ * Montserrat type scale through tokens rather than per-component font
+ * declarations. Not every title is bold: hierarchy comes from the size/weight
+ * combination. Component-specific heading styles that set their own size/weight
+ * still win via normal CSS specificity/cascade; this only establishes the
+ * corporate heading font and a sensible default scale.
+ */
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+}
+
+h1 {
+  font-size: var(--font-size-page-title);
+  line-height: var(--line-height-page-title);
+  font-weight: var(--font-weight-semibold);
+}
+
+h2 {
+  font-size: var(--font-size-section-title);
+  line-height: var(--line-height-section-title);
+  font-weight: var(--font-weight-semibold);
+}
+
+h3 {
+  font-size: var(--font-size-card-title);
+  line-height: var(--line-height-card-title);
+  font-weight: var(--font-weight-semibold);
+}

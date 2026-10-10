@@ -1,0 +1,6 @@
+{
+  "name": "@kiro-essentials/contracts",
+  "private": true,
+  "version": "0.1.0",
+  "description": "OpenAPI contracts for the kiro-essentials platform (Cognito-based auth)"
+}

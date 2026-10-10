@@ -1,0 +1,145 @@
+/*
+ * SpeakerSection styles.
+ *
+ * Reuses the global design tokens from styles/tokens.css (colors, spacing,
+ * radii, typography, shadows). Restrained editorial composition consistent with
+ * the rest of the landing: a circular portrait paired with a concise bio and an
+ * optional highlighted quote. No emojis, no icon dependency, no new dependency.
+ */
+
+.speaker {
+  width: 100%;
+  padding: var(--space-9) var(--space-6);
+  background: var(--color-white);
+  color: var(--color-text-primary);
+}
+
+.speaker__inner {
+  width: 100%;
+  max-width: var(--landing-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-7);
+}
+
+/* Media column: keeps the portrait centered and balanced when stacked. */
+.speaker__media {
+  display: flex;
+  justify-content: center;
+}
+
+/*
+ * Circular portrait: a fixed 1:1 container with border-radius 50% and clipped
+ * overflow, so the image reads as a circle at every breakpoint. A subtle ring
+ * and soft shadow use existing tokens for a restrained, professional treatment.
+ */
+.speaker__portrait {
+  width: clamp(160px, 40vw, 240px);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 4px var(--color-light-bg),
+    0 0 0 5px var(--color-border),
+    var(--card-shadow);
+  background: var(--color-bg-muted);
+}
+
+.speaker__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.speaker__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  text-align: center;
+}
+
+.speaker__eyebrow {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary-blue);
+}
+
+.speaker__name {
+  margin: 0;
+  color: var(--color-dark-navy);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  line-height: var(--line-height-heading);
+}
+
+.speaker__descriptor {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.speaker__bio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.speaker__bio p {
+  margin: 0;
+  max-width: 60ch;
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-body);
+  color: var(--color-text-secondary);
+}
+
+.speaker__bio p:first-child {
+  color: var(--color-text-primary);
+}
+
+/* Highlighted quote: a quiet editorial accent, not a loud callout. */
+.speaker__quote {
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-4);
+  border-left: 3px solid var(--color-bright-cyan);
+  max-width: 56ch;
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  font-style: italic;
+  line-height: var(--line-height-body);
+  color: var(--color-text-primary);
+}
+
+/* Above the mobile breakpoint: two-column editorial composition. */
+@media (min-width: 769px) {
+  .speaker__inner {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-9);
+  }
+
+  .speaker__media {
+    flex: 0 0 auto;
+  }
+
+  .speaker__body {
+    flex: 1 1 auto;
+    text-align: left;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .speaker {
+    padding: var(--space-8) var(--space-5);
+  }
+}

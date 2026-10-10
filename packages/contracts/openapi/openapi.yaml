@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: kiro-essentials API
+  description: >
+    API contract for the kiro-essentials platform.
+
+    Authentication is handled entirely by AWS Cognito Managed Login v2
+    (Authorization Code Flow with PKCE). Login, sign-up, password recovery,
+    and logout are Cognito-hosted; there are no backend authentication
+    endpoints. Protected API routes are validated by the API Gateway JWT
+    Authorizer using the Cognito access token described by the BearerAuth
+    security scheme.
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com
+    description: Environment-specific API Gateway URL
+
+security:
+  - BearerAuth: []
+
+paths:
+  /hello:
+    get:
+      operationId: getHello
+      summary: Protected sample endpoint
+      description: >
+        Protected sample endpoint used to verify the end-to-end authenticated
+        flow. Requires a valid Cognito access token in the
+        `Authorization: Bearer <token>` header; the request is validated by the
+        API Gateway JWT Authorizer. Documented to reflect the already-implemented
+        runtime behavior; no behavioral change is implied by this contract.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful authenticated response from the protected backend.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelloResponse'
+        '500':
+          description: >
+            Internal service error. Returned as-is by the current implementation;
+            this endpoint does not use the standard `{ error: { code, message } }`
+            shape.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelloErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Cognito access token obtained via Authorization Code Flow with PKCE.
+        Validated by the API Gateway JWT Authorizer.
+
+  schemas:
+    HelloResponse:
+      type: object
+      required:
+        - message
+        - data
+        - timestamp
+      properties:
+        message:
+          type: string
+          description: Human-facing message returned by the protected backend.
+          example: Hola desde el backend protegido
+        data:
+          type: array
+          description: Sample collection of items returned by the endpoint.
+          items:
+            $ref: '#/components/schemas/HelloItem'
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO-8601 timestamp of when the response was generated.
+          example: '2026-10-08T12:34:56.789Z'
+    HelloItem:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Elemento 1
+    HelloErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: >
+            Error message returned by the current `/hello` implementation. This
+            endpoint intentionally keeps its existing `{ message }` body and is
+            not retrofitted to the standard error shape.
+          example: Error interno del servicio

@@ -1,0 +1,209 @@
+/*
+ * ArchitectureSection styles.
+ *
+ * Reuses the global design tokens from styles/tokens.css (colors, spacing,
+ * radii, typography). The two flows are rendered with styled nodes connected by
+ * restrained CSS linework (decorative arrow connectors). No diagramming
+ * dependency, no icon dependency, no new dependency, no emojis.
+ *
+ * Responsive: on wide screens each flow lays its nodes horizontally with
+ * right-pointing connectors; on narrow screens nodes stack vertically with
+ * down-pointing connectors, so there is never horizontal overflow.
+ */
+
+.architecture {
+  width: 100%;
+  padding: var(--space-9) var(--space-6);
+  background: var(--color-dark-navy);
+  color: var(--color-white);
+}
+
+.architecture__inner {
+  width: 100%;
+  max-width: var(--landing-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.architecture__eyebrow {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-bright-cyan);
+}
+
+.architecture__title {
+  margin: 0;
+  max-width: 20ch;
+  color: var(--color-white);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  line-height: var(--line-height-heading);
+}
+
+.architecture__lead {
+  margin: 0;
+  max-width: 60ch;
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-body);
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.architecture__flows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  margin-top: var(--space-3);
+}
+
+.architecture__flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.architecture__flow-title {
+  margin: 0;
+  color: var(--color-white);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-heading);
+}
+
+.architecture__flow-desc {
+  margin: 0;
+  max-width: 68ch;
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-body);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Nodes list: stacked vertically by default (mobile-first, no overflow). */
+.architecture__nodes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+
+.architecture__node-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.architecture__node {
+  width: 100%;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(22, 178, 238, 0.35);
+  border-radius: var(--border-radius-md);
+}
+
+.architecture__node-label {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-white);
+}
+
+.architecture__node-detail {
+  font-family: var(--font-body);
+  font-size: var(--font-size-helper);
+  line-height: var(--line-height-helper);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-bright-cyan);
+}
+
+/*
+ * Decorative connector (aria-hidden). Vertical, down-pointing arrow by default
+ * (stacked layout). Built purely from CSS linework.
+ */
+.architecture__connector {
+  position: relative;
+  display: block;
+  width: 2px;
+  height: var(--space-6);
+  background: linear-gradient(
+    to bottom,
+    var(--color-primary-blue),
+    var(--color-bright-cyan)
+  );
+}
+
+.architecture__connector::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--color-bright-cyan);
+  border-bottom: 2px solid var(--color-bright-cyan);
+  transform: translate(-50%, 50%) rotate(45deg);
+}
+
+/* Above the mobile breakpoint, each flow becomes a horizontal row. */
+@media (min-width: 769px) {
+  .architecture__nodes {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+
+  .architecture__node-item {
+    flex: 1 1 0;
+    flex-direction: row;
+    align-items: stretch;
+    min-width: 0;
+  }
+
+  .architecture__node {
+    max-width: none;
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  /* Rotate the connector to a horizontal, right-pointing arrow. */
+  .architecture__connector {
+    align-self: center;
+    width: var(--space-5);
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      var(--color-primary-blue),
+      var(--color-bright-cyan)
+    );
+  }
+
+  .architecture__connector::after {
+    left: auto;
+    right: 0;
+    bottom: 50%;
+    border-right: 2px solid var(--color-bright-cyan);
+    border-bottom: 2px solid var(--color-bright-cyan);
+    transform: translate(50%, 50%) rotate(-45deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .architecture {
+    padding: var(--space-8) var(--space-5);
+  }
+}

@@ -1,0 +1,142 @@
+/*
+ * ChoosePathSection styles.
+ *
+ * Reuses the global design tokens from styles/tokens.css (colors, spacing,
+ * radii, typography). The five paths share a single editorial surface separated
+ * by light rules and a restrained CSS index/linework accent, deliberately
+ * avoiding a generic SaaS card grid while keeping consistent hierarchy. A dark
+ * navy ground with a controlled blue→cyan accent distinguishes this section from
+ * the lighter neighbouring sections. No emojis, no icon dependency, no new
+ * dependency.
+ */
+
+.choose-path {
+  width: 100%;
+  padding: var(--space-9) var(--space-6);
+  background: var(--color-dark-navy);
+  color: var(--color-white);
+  overflow-x: hidden;
+}
+
+.choose-path__inner {
+  width: 100%;
+  max-width: var(--landing-max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.choose-path__eyebrow {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-bright-cyan);
+}
+
+.choose-path__title {
+  margin: 0;
+  max-width: 20ch;
+  color: var(--color-white);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  line-height: var(--line-height-heading);
+}
+
+.choose-path__lead {
+  margin: 0;
+  max-width: 60ch;
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-body);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Paths: an editorial numbered list, not a card grid. */
+.choose-path__list {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.choose-path__item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding: var(--space-6) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+/*
+ * Restrained technical linework accent: a short gradient rule that sits at the
+ * leading edge of each path, standing in for an icon. Purely decorative.
+ */
+.choose-path__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: var(--space-6);
+  width: 2px;
+  height: 1.4em;
+  background: linear-gradient(
+    to bottom,
+    var(--color-bright-cyan),
+    var(--color-teal-cyan)
+  );
+  border-radius: 2px;
+}
+
+/* Subtle numeric accent instead of an icon; purely decorative. */
+.choose-path__index {
+  flex: 0 0 auto;
+  padding-left: var(--space-4);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  color: var(--color-bright-cyan);
+  padding-top: 0.2em;
+}
+
+.choose-path__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.choose-path__item-title {
+  margin: 0;
+  color: var(--color-white);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-heading);
+}
+
+.choose-path__item-copy {
+  margin: 0;
+  max-width: 60ch;
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-body);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* Above the mobile breakpoint, paths flow into two editorial columns. */
+@media (min-width: 769px) {
+  .choose-path__list {
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--space-8);
+  }
+}
+
+@media (max-width: 768px) {
+  .choose-path {
+    padding: var(--space-8) var(--space-5);
+  }
+}
