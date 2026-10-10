@@ -13,6 +13,18 @@ autenticación está simulada localmente y los datos son efímeros.
 > código de infraestructura AWS en `infra/` se conserva como referencia pero
 > **no se usa** en el flujo local.
 
+## Unirse al workshop
+
+Únete al evento de AWS Workshop Studio:
+
+👉 **[Unirse al workshop](https://catalog.us-east-1.prod.workshops.aws/join?access-code=9ac1-00e3fc-37)**
+
+Si el enlace no funciona, copia y pega esta URL en tu navegador:
+
+```
+https://catalog.us-east-1.prod.workshops.aws/join?access-code=9ac1-00e3fc-37
+```
+
 ## Estructura del workspace
 
 | Ruta | Paquete | Descripción |

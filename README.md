@@ -13,6 +13,18 @@ mocked locally and data is ephemeral.
 > infrastructure code under `infra/` is kept for reference but is **not used**
 > by the local workflow.
 
+## Join the Workshop
+
+Join the AWS Workshop Studio event:
+
+👉 **[Join the workshop](https://catalog.us-east-1.prod.workshops.aws/join?access-code=9ac1-00e3fc-37)**
+
+If the link doesn't work, copy and paste this URL into your browser:
+
+```
+https://catalog.us-east-1.prod.workshops.aws/join?access-code=9ac1-00e3fc-37
+```
+
 ## Workspace Structure
 
 | Path | Package | Description |
