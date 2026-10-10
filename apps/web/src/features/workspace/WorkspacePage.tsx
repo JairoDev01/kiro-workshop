@@ -4,7 +4,7 @@ import { WorkspaceHeader } from './WorkspaceHeader';
 import { WelcomeSection } from './WelcomeSection';
 import { ProtectedApiCard } from './ProtectedApiCard';
 import { FoundationStrip } from './FoundationStrip';
-import { WorkspaceEmptyState } from './WorkspaceEmptyState';
+import { SavedResourcesPanel } from '../saved-resources/SavedResourcesPanel';
 import './WorkspacePage.css';
 
 /**
@@ -45,7 +45,7 @@ export const WorkspacePage = () => {
         <div className="workspace__columns">
           {/* Primary product workspace region — dominant, first in source order */}
           <div className="workspace__primary">
-            <WorkspaceEmptyState />
+            <SavedResourcesPanel />
           </div>
           {/* Secondary environment status region — narrower, after primary */}
           <div className="workspace__secondary">

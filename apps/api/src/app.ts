@@ -10,6 +10,7 @@ import express, { type Express } from 'express';
 import cors from 'cors';
 import { injectDevUser } from './shared/http/middleware.js';
 import { helloRouter } from './features/hello/hello.routes.js';
+import { resourcesRouter } from './features/resources/resources.routes.js';
 
 export interface AppConfig {
   /** Allowed browser origins for CORS (e.g. the Vite dev server). */
@@ -36,7 +37,7 @@ export function createApp(config: AppConfig): Express {
   // AUTH REMOVED (local mode): no token is validated. A fixed demo user is
   // injected so handlers that read `req.user` (e.g. future owner-scoped
   // features) still work without any real authentication.
-  app.use('/', injectDevUser(), helloRouter());
+  app.use('/', injectDevUser(), helloRouter(), resourcesRouter());
 
   return app;
 }

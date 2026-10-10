@@ -42,6 +42,12 @@ vi.mock('../../lib/api/hello-client', () => ({
     .mockResolvedValue({ ok: true, message: 'Hola', items: [], status: 200 }),
 }));
 
+// Prevent the `listResources` call in `SavedResourcesPanel` from hitting the network.
+vi.mock('../../lib/api/resources-client', () => ({
+  listResources: vi.fn().mockResolvedValue([]),
+  createResource: vi.fn().mockResolvedValue({ ok: true }),
+}));
+
 // Keep the shared logout helper inert.
 vi.mock('../../lib/auth/logout', () => ({
   logout: vi.fn(),
@@ -99,7 +105,7 @@ describe('WorkspacePage - /home workspace', () => {
       screen.getByRole('heading', { level: 1, name: 'Bienvenido al workspace' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Listo para evolucionar' }),
+      screen.getByRole('heading', { level: 2, name: 'Recursos guardados' }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { level: 2, name: 'Estado del entorno' }),
@@ -130,7 +136,7 @@ describe('WorkspacePage - /home workspace', () => {
 
     expect(
       primary!.contains(
-        screen.getByRole('heading', { level: 2, name: 'Listo para evolucionar' }),
+        screen.getByRole('heading', { level: 2, name: 'Recursos guardados' }),
       ),
     ).toBe(true);
     expect(
@@ -164,7 +170,7 @@ describe('WorkspacePage - /home workspace', () => {
       screen.getByRole('heading', { level: 2, name: 'Estado del entorno' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Listo para evolucionar' }),
+      screen.getByRole('heading', { level: 2, name: 'Recursos guardados' }),
     ).toBeInTheDocument();
   });
 });

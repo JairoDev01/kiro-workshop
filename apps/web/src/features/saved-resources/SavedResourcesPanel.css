@@ -1,0 +1,258 @@
+/*
+ * SavedResourcesPanel styles (Requirements R11, R13).
+ *
+ * Styles the resource-saving form and resource list inside the primary
+ * workspace column. All values are composed exclusively from the shared design
+ * tokens defined in styles/tokens.css — no new palette values, no hardcoded
+ * pixel constants outside of the 1px border convention already used project-wide.
+ *
+ * Layout is intentionally simple and single-column so the panel is fully
+ * usable on narrow/mobile viewports without a breakpoint change to the core
+ * structure (Requirement R11). The responsive @media block at the bottom only
+ * tightens spacing on small screens.
+ */
+
+/* ── Panel root ──────────────────────────────────────────────────────────── */
+
+.saved-resources-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ── Section title ───────────────────────────────────────────────────────── */
+
+/*
+ * The h2 rendered by the panel. Inherits Montserrat + semibold weight from
+ * the global h2 rule in tokens.css; only color and margin are set here.
+ */
+.saved-resources-panel__title {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+/* ── Creation form ───────────────────────────────────────────────────────── */
+
+.saved-resources-panel__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-white);
+}
+
+/* Label + input stacked vertically. */
+.saved-resources-panel__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.saved-resources-panel__label {
+  font-family: var(--font-body);
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.saved-resources-panel__input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-white);
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body-text);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-fast);
+  /* Prevents the native input from overflowing the form on narrow screens. */
+  box-sizing: border-box;
+}
+
+.saved-resources-panel__input:focus {
+  outline: none;
+  border-color: var(--color-primary-blue);
+}
+
+.saved-resources-panel__input:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+  outline-offset: 1px;
+}
+
+.saved-resources-panel__input:disabled {
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+/* ── Error message (form + list-region) ─────────────────────────────────── */
+
+/*
+ * Used for both formError (inside the form) and loadError (inside the list
+ * region). Rendered with role="alert" in the TSX so it is announced by
+ * screen readers without polling (Requirement R13).
+ *
+ * Color is not the only error signal: "⚠" prefix in the copy + bold weight
+ * together carry the meaning. The --color-text-primary foreground on the muted
+ * background keeps contrast accessible.
+ */
+.saved-resources-panel__error {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-bg-muted);
+  font-family: var(--font-body);
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* ── Submit button ───────────────────────────────────────────────────────── */
+
+.saved-resources-panel__submit {
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-5);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: var(--color-primary-blue);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-body-text);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.saved-resources-panel__submit:hover:not(:disabled) {
+  background: var(--color-bright-cyan);
+}
+
+.saved-resources-panel__submit:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+  outline-offset: 2px;
+}
+
+.saved-resources-panel__submit:disabled {
+  background: var(--color-bg-muted);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+/* ── List region ─────────────────────────────────────────────────────────── */
+
+.saved-resources-panel__list-region {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+
+.saved-resources-panel__empty {
+  margin: 0;
+  padding: var(--space-7) var(--space-6);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--border-radius-lg);
+  background: var(--color-bg-muted);
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body-text);
+  color: var(--color-text-secondary);
+}
+
+/* ── Resource list ───────────────────────────────────────────────────────── */
+
+.saved-resources-panel__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/*
+ * Each resource item is a card-like row: title on one line, URL link below.
+ * Uses the shared card border and a subtle shadow so items stand out from
+ * the page background without heavy styling.
+ */
+.saved-resources-panel__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  border: var(--card-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-white);
+  box-shadow: var(--card-shadow);
+  /* Guard against a very long URL pushing the item wider than its column. */
+  min-width: 0;
+}
+
+.saved-resources-panel__item-title {
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-body-text);
+  color: var(--color-text-primary);
+  /* Clip overlong titles gracefully. */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.saved-resources-panel__item-link {
+  font-family: var(--font-body);
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  color: var(--color-primary-blue);
+  text-decoration: underline;
+  /* Wrap long URLs rather than overflow (Requirement R11). */
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.saved-resources-panel__item-link:hover {
+  color: var(--color-bright-cyan);
+}
+
+.saved-resources-panel__item-link:focus-visible {
+  outline: 2px solid var(--color-primary-blue);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ── Narrow-screen adjustments (<= 768px) ────────────────────────────────── */
+
+/*
+ * On narrow/mobile screens the panel is already single-column so no layout
+ * change is needed. Only spacing is tightened so the form and list breathe
+ * comfortably without wasting vertical space (Requirement R11).
+ */
+@media (max-width: 768px) {
+  .saved-resources-panel__form {
+    padding: var(--space-4);
+  }
+
+  .saved-resources-panel__empty {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .saved-resources-panel__item {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  /* Let the submit button stretch full-width for easier touch targeting. */
+  .saved-resources-panel__submit {
+    align-self: stretch;
+    text-align: center;
+  }
+}
