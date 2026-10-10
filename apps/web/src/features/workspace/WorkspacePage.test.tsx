@@ -142,6 +142,126 @@ describe('WorkspacePage - protected /home workspace', () => {
     expect(within(header).queryByText('cognito-sub-123')).not.toBeInTheDocument();
   });
 
+  it('renders the refined two-region structure: welcome above, primary product + secondary environment regions, foundation below (R7.1)', async () => {
+    authState.isAuthenticated = true;
+    authState.user = {
+      expired: false,
+      access_token: SECRET_ACCESS_TOKEN,
+      profile: {
+        email: 'ada@example.com',
+        preferred_username: 'ada',
+        sub: 'cognito-sub-123',
+      },
+    };
+
+    renderHomeRoute();
+
+    // Settle the auto `GET /hello` state update from the mounted
+    // ProtectedApiCard inside act() so no post-render warning is emitted.
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    // Welcome section: the single page h1 renders above everything else.
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Bienvenido al workspace' }),
+    ).toBeInTheDocument();
+
+    // Primary product workspace region. Per the design dependency note, the
+    // committed tree composes WorkspaceEmptyState (SavedResourcesSection does
+    // not exist yet), so assert against the actual rendered primary component —
+    // the intentional empty-state content.
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Listo para evolucionar' }),
+    ).toBeInTheDocument();
+
+    // Secondary environment status region: the `/hello` ProtectedApiCard, keyed
+    // off its "Estado del entorno" heading.
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Estado del entorno' }),
+    ).toBeInTheDocument();
+
+    // Technology foundation band renders below.
+    expect(
+      screen.getByRole('heading', { level: 3, name: 'Base tecnológica' }),
+    ).toBeInTheDocument();
+  });
+
+  it('orders the regions primary-first in the DOM: welcome → primary before secondary → foundation (R7.2, R1.1, R1.2, R3.2)', async () => {
+    authState.isAuthenticated = true;
+    authState.user = {
+      expired: false,
+      access_token: SECRET_ACCESS_TOKEN,
+      profile: {
+        email: 'ada@example.com',
+        preferred_username: 'ada',
+        sub: 'cognito-sub-123',
+      },
+    };
+
+    const { container } = renderHomeRoute();
+
+    // Settle the auto `GET /hello` state update from the mounted
+    // ProtectedApiCard inside act() so no post-render warning is emitted.
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    // Locate the structural regions directly from the rendered tree. The
+    // wrapper `<div>`s are presentational grid cells with no heading/landmark,
+    // so select them by class; the welcome/foundation anchors are their
+    // headings, which carry the semantic outline.
+    const columns = container.querySelector('.workspace__columns');
+    const primary = container.querySelector('.workspace__primary');
+    const secondary = container.querySelector('.workspace__secondary');
+    expect(columns).not.toBeNull();
+    expect(primary).not.toBeNull();
+    expect(secondary).not.toBeNull();
+
+    // Primary-first (R1.1 / R1.2 / R3.2): the product workspace region appears
+    // before the secondary environment status region in document order.
+    expect(
+      primary!.compareDocumentPosition(secondary!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+
+    // The empty-state ("Listo para evolucionar") lives inside the primary cell and
+    // the `/hello` card ("Estado del entorno") inside the secondary cell — confirms
+    // the regions are mapped to the right content, not just the right order.
+    expect(
+      primary!.contains(
+        screen.getByRole('heading', { level: 2, name: 'Listo para evolucionar' }),
+      ),
+    ).toBe(true);
+    expect(
+      secondary!.contains(
+        screen.getByRole('heading', { level: 2, name: 'Estado del entorno' }),
+      ),
+    ).toBe(true);
+
+    // Hierarchy without relying on CSS (R7.2): the welcome h1 precedes the
+    // two-column region, and the foundation band follows it.
+    const welcomeHeading = screen.getByRole('heading', {
+      level: 1,
+      name: 'Bienvenido al workspace',
+    });
+    const foundationHeading = screen.getByRole('heading', {
+      level: 3,
+      name: 'Base tecnológica',
+    });
+
+    // welcome h1 → columns
+    expect(
+      welcomeHeading.compareDocumentPosition(columns!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    // columns → foundation band
+    expect(
+      columns!.compareDocumentPosition(foundationHeading) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it('never renders the access token anywhere in the DOM', async () => {
     authState.isAuthenticated = true;
     authState.user = {
@@ -164,5 +284,60 @@ describe('WorkspacePage - protected /home workspace', () => {
     expect(container.innerHTML).not.toContain(SECRET_ACCESS_TOKEN);
     expect(screen.queryByText(SECRET_ACCESS_TOKEN)).not.toBeInTheDocument();
     expect(screen.queryByText(/Bearer/i)).not.toBeInTheDocument();
+  });
+
+  it('preserves single-h1, landmark, account-menu, and product/environment regions after the refinement (R6.1, R6.6, R4.1, R4.4, R4.5)', async () => {
+    authState.isAuthenticated = true;
+    authState.user = {
+      expired: false,
+      access_token: SECRET_ACCESS_TOKEN,
+      profile: {
+        email: 'ada@example.com',
+        preferred_username: 'ada',
+        sub: 'cognito-sub-123',
+      },
+    };
+
+    renderHomeRoute();
+
+    // Settle the auto `GET /hello` state update from the mounted
+    // ProtectedApiCard inside act() so no post-render warning is emitted.
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    // Exactly one `h1` on the page — the presentational grid wrappers add no
+    // competing heading (R6.1).
+    const h1s = screen.getAllByRole('heading', { level: 1 });
+    expect(h1s).toHaveLength(1);
+    expect(h1s[0]).toHaveTextContent('Bienvenido al workspace');
+
+    // Exactly one `banner` and one `main` landmark remain — the wrapper
+    // `<div>`s carry no landmark role (R6.6).
+    expect(screen.getAllByRole('banner')).toHaveLength(1);
+    expect(screen.getAllByRole('main')).toHaveLength(1);
+
+    // The resolved email identifier is shown inside the `banner` (R4.1).
+    const banner = screen.getByRole('banner');
+    expect(within(banner).getByText('ada@example.com')).toBeInTheDocument();
+
+    // The account menu is present in the header (R4.1): its accessible trigger
+    // button exposes the "Cuenta de usuario" label.
+    expect(
+      within(banner).getByRole('button', { name: 'Cuenta de usuario' }),
+    ).toBeInTheDocument();
+
+    // The `/hello` environment status card is present (R4.4).
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Estado del entorno' }),
+    ).toBeInTheDocument();
+
+    // The primary product workspace region is present (R4.5). Per the design
+    // dependency note, SavedResourcesSection does not exist yet, so the primary
+    // region holds WorkspaceEmptyState — assert against its heading, consistent
+    // with tasks 4.1/4.2.
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Listo para evolucionar' }),
+    ).toBeInTheDocument();
   });
 });
