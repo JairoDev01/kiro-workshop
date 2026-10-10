@@ -1,17 +1,16 @@
 /**
- * kiro-essentials backend application code.
+ * kiro-essentials backend — LOCAL execution.
  *
- * Authentication is handled entirely by AWS Cognito Managed Login v2
- * (Authorization Code Flow with PKCE): login, sign-up, password recovery,
- * and logout are Cognito-hosted. There are therefore no backend
- * authentication endpoints.
+ * Everything runs locally now: no CDK, no API Gateway, no Lambda, no DynamoDB.
+ * Authentication is still Cognito Managed Login (Authorization Code + PKCE) in
+ * the browser; this backend validates the resulting Cognito ACCESS token
+ * against the pool's public JWKS and serves protected routes from a local
+ * Express server. Ephemeral data lives in memory (or the frontend's
+ * localStorage) — nothing is persisted to a cloud datastore.
  *
- * Protected API routes are guarded by the API Gateway JWT Authorizer
- * (configured in the infra `ApiGatewayStack`) using the Cognito access
- * token. No Lambda application handlers are required for the current
- * login/signup scope.
- *
- * This file exists so the backend workspace has a valid TypeScript entry
- * point. Add feature handlers under `src/features/` as new scope is approved.
+ * Entry points:
+ *   - `createApp()` in `./app.ts`     — builds the Express app (used by tests).
+ *   - `./server.ts`                   — starts the local HTTP server.
  */
-export {};
+export { createApp } from './app.js';
+export type { AppConfig } from './app.js';

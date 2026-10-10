@@ -20,7 +20,7 @@ const authState = {
   error: undefined as unknown,
 };
 
-vi.mock('react-oidc-context', () => ({
+vi.mock('../../lib/auth/mock-auth', () => ({
   useAuth: () => authState,
 }));
 

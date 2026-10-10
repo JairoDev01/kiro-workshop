@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from 'react-oidc-context';
 import {
   fetchHello,
   type HelloResult,
@@ -78,9 +77,6 @@ const SUPPORTING_TEXT =
   'Esta llamada utiliza tu sesión de Cognito para acceder a un endpoint protegido por API Gateway.';
 
 export const ProtectedApiCard = () => {
-  const auth = useAuth();
-  const accessToken = auth.user?.access_token;
-
   const [status, setStatus] = useState<Status>({ phase: 'idle' });
 
   // A monotonically increasing counter that identifies the current request
@@ -96,18 +92,11 @@ export const ProtectedApiCard = () => {
   // updates state. The request is re-performed on each run (no one-shot guard),
   // so the real mount's request always resolves into a terminal state.
   useEffect(() => {
-    // Without a token we cannot authenticate the request; surface an error
-    // state rather than issuing an unauthenticated call.
-    if (!accessToken) {
-      setStatus({ phase: 'error', kind: 'unauthorized' });
-      return;
-    }
-
     let active = true;
 
     setStatus({ phase: 'loading' });
 
-    void fetchHello(accessToken)
+    void fetchHello()
       .then((result: HelloResult) => {
         // A superseded (cleaned-up) run must never flip the visible state.
         if (!active) {
@@ -139,7 +128,7 @@ export const ProtectedApiCard = () => {
     return () => {
       active = false;
     };
-  }, [accessToken, attempt]);
+  }, [attempt]);
 
   const handleRetry = () => {
     setAttempt((a) => a + 1);

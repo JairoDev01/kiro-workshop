@@ -11,6 +11,10 @@ import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { S3Client } from '@aws-sdk/client-s3';
 import { CloudFrontClient } from '@aws-sdk/client-cloudfront';
+import { SSMClient } from '@aws-sdk/client-ssm';
+import { LambdaClient } from '@aws-sdk/client-lambda';
+import { ApiGatewayV2Client } from '@aws-sdk/client-apigatewayv2';
+import { IAMClient } from '@aws-sdk/client-iam';
 
 /** Resolve the active region from the environment, defaulting to us-east-1. */
 export function resolveRegion() {
@@ -30,6 +34,23 @@ export function stsClient() {
 
 export function cloudFormationClient() {
   return cached('cfn', () => new CloudFormationClient({ region: resolveRegion() }));
+}
+
+export function ssmClient() {
+  return cached('ssm', () => new SSMClient({ region: resolveRegion() }));
+}
+
+export function lambdaClient() {
+  return cached('lambda', () => new LambdaClient({ region: resolveRegion() }));
+}
+
+export function apiGatewayV2Client() {
+  return cached('apigwv2', () => new ApiGatewayV2Client({ region: resolveRegion() }));
+}
+
+export function iamClient() {
+  // IAM is a global service; the client still needs a region for signing.
+  return cached('iam', () => new IAMClient({ region: resolveRegion() }));
 }
 
 export function cognitoClient() {

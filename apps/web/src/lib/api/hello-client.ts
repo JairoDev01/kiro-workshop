@@ -42,7 +42,7 @@ export type HelloResult =
  * This client only consumes the existing `/hello` endpoint; it does not change
  * its runtime contract.
  */
-export const fetchHello = async (accessToken: string): Promise<HelloResult> => {
+export const fetchHello = async (): Promise<HelloResult> => {
   // Outer guard: the ENTIRE body — including `resolveApiBaseUrl()`, which
   // throws when `VITE_API_URL` is missing — is wrapped so that ANY thrown error
   // or rejected promise degrades to a returned failure result rather than a
@@ -53,10 +53,11 @@ export const fetchHello = async (accessToken: string): Promise<HelloResult> => {
 
     let response: Response;
     try {
+      // Auth has been removed for local mode: no Authorization header is sent;
+      // the local API no longer validates tokens.
       response = await fetch(`${baseUrl}/hello`, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${accessToken}`,
           Accept: 'application/json',
         },
       });

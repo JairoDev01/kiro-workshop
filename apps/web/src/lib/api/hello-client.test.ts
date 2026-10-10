@@ -15,7 +15,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { fetchHello } from './hello-client';
 
 const API_BASE = 'https://api.example.test';
-const ACCESS_TOKEN = 'test-token';
 
 describe('fetchHello - response parsing', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
@@ -43,7 +42,7 @@ describe('fetchHello - response parsing', () => {
       ],
     });
 
-    const result = await fetchHello(ACCESS_TOKEN);
+    const result = await fetchHello();
 
     expect(result).toEqual({
       ok: true,
@@ -71,7 +70,7 @@ describe('fetchHello - response parsing', () => {
       }),
     });
 
-    const result = await fetchHello(ACCESS_TOKEN);
+    const result = await fetchHello();
 
     expect(result).toEqual({
       ok: true,
@@ -91,7 +90,7 @@ describe('fetchHello - response parsing', () => {
       json: async () => ({}),
     });
 
-    const result = await fetchHello(ACCESS_TOKEN);
+    const result = await fetchHello();
 
     expect(result).toEqual({ ok: false, kind: 'unauthorized', status: 401 });
   });

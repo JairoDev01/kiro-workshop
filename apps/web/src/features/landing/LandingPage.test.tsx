@@ -15,21 +15,12 @@
  * MemoryRouter, and a LocationDisplay helper to assert redirect pathnames.
  */
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { LandingPage } from './LandingPage';
 
-// --- Mocks ---
-
-// Controllable auth mock so each test can toggle authentication state.
-const authState = {
-  isAuthenticated: false,
-  signinRedirect: vi.fn(),
-};
-
-vi.mock('react-oidc-context', () => ({
-  useAuth: () => authState,
-}));
+// Auth was removed; the landing no longer reads auth state. Clicking a sign-in
+// CTA just navigates to /home.
 
 // Helper to expose the current location so we can assert redirect targets.
 const LocationDisplay = () => {
@@ -49,14 +40,7 @@ const renderLandingRoute = () =>
   );
 
 describe('LandingPage', () => {
-  beforeEach(() => {
-    authState.isAuthenticated = false;
-    authState.signinRedirect = vi.fn();
-  });
-
-  it('renders the landing and stays on the route for an unauthenticated visitor', () => {
-    authState.isAuthenticated = false;
-
+  it('renders the landing and stays on the route for a visitor', () => {
     renderLandingRoute();
 
     expect(screen.getByTestId('current-location').textContent).toBe('/');
@@ -69,13 +53,11 @@ describe('LandingPage', () => {
     expect(screen.queryByTestId('home-surface')).not.toBeInTheDocument();
   });
 
-  it('redirects an authenticated visitor to /home', () => {
-    authState.isAuthenticated = true;
-
+  it('does not auto-redirect; the landing stays visible until the user acts', () => {
     renderLandingRoute();
 
-    expect(screen.getByTestId('current-location').textContent).toBe('/home');
-    expect(screen.getByTestId('home-surface')).toBeInTheDocument();
+    expect(screen.getByTestId('current-location').textContent).toBe('/');
+    expect(screen.queryByTestId('home-surface')).not.toBeInTheDocument();
   });
 
   it('renders the event logo with alt text and a resolved src', () => {
@@ -103,15 +85,16 @@ describe('LandingPage', () => {
     expect(portrait?.querySelector('img')).not.toBeNull();
   });
 
-  it('invokes signinRedirect from both the hero CTA and the final CTA', () => {
+  it('navigates to /home when a sign-in CTA is clicked', async () => {
     renderLandingRoute();
 
     const signInButtons = screen.getAllByRole('button', { name: 'Iniciar sesión' });
     expect(signInButtons).toHaveLength(2);
 
-    signInButtons.forEach((button) => fireEvent.click(button));
+    fireEvent.click(signInButtons[0]!);
 
-    expect(authState.signinRedirect).toHaveBeenCalledTimes(2);
+    expect(await screen.findByTestId('home-surface')).toBeInTheDocument();
+    expect(screen.getByTestId('current-location').textContent).toBe('/home');
   });
 
   it('does not render any credential inputs (OIDC-only public page)', () => {

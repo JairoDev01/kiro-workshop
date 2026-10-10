@@ -1,4 +1,4 @@
-import { useAuth } from 'react-oidc-context';
+import { useAuth } from './mock-auth';
 import { Navigate } from 'react-router-dom';
 import { handleSessionExpired } from './error-utils';
 

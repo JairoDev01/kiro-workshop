@@ -86,6 +86,46 @@ export function readEnv() {
   return parseEnv(fs.readFileSync(envFile, 'utf8'));
 }
 
+/** The .env placeholder values for Cognito, treated as "not configured". */
+const COGNITO_PLACEHOLDERS = new Set([
+  'us-east-1_XXXXXXXXX',
+  'xxxxxxxxxxxxxxxxxxxxxxxxxx',
+  'your-app-prefix.auth.us-east-1.amazoncognito.com',
+]);
+
+/**
+ * Load an EXTERNAL Cognito pool configuration from the environment / .env into
+ * process.env as COGNITO_USER_POOL_ID / COGNITO_CLIENT_ID / COGNITO_DOMAIN so
+ * that both `npx cdk` (infra/bin/app.ts) and the deploy scripts can read it.
+ *
+ * Precedence: explicit COGNITO_* env vars win; otherwise the VITE_COGNITO_*
+ * values the participant filled into .env are used. Untouched placeholder
+ * values are ignored (treated as "deploy a fresh pool" / original behavior).
+ *
+ * Returns true when an external pool was configured, false otherwise.
+ */
+export function loadExternalCognito() {
+  const env = readEnv();
+  const pick = (explicitKey, viteKey) => {
+    const explicit = process.env[explicitKey]?.trim();
+    if (explicit) return explicit;
+    const fromFile = (env[viteKey] ?? '').trim();
+    if (!fromFile || COGNITO_PLACEHOLDERS.has(fromFile)) return undefined;
+    return fromFile;
+  };
+
+  const userPoolId = pick('COGNITO_USER_POOL_ID', 'VITE_COGNITO_USER_POOL_ID');
+  if (!userPoolId) return false;
+
+  const clientId = pick('COGNITO_CLIENT_ID', 'VITE_COGNITO_CLIENT_ID');
+  const domain = pick('COGNITO_DOMAIN', 'VITE_COGNITO_DOMAIN');
+
+  process.env.COGNITO_USER_POOL_ID = userPoolId;
+  if (clientId) process.env.COGNITO_CLIENT_ID = clientId;
+  if (domain) process.env.COGNITO_DOMAIN = domain;
+  return true;
+}
+
 /**
  * Load AWS_* credentials from .env into process.env so the AWS SDK v3 default
  * credential provider chain and `npx cdk` pick them up. Values already present
@@ -157,6 +197,25 @@ export function sessionToken() {
  * frontend configuration. The file is written atomically-ish (write then
  * nothing fancy) and secrets are never logged by this function.
  */
+/**
+ * Update (or append) a single KEY=value line in the repo-root .env, preserving
+ * every other line, comment and ordering. Creates .env if it does not exist.
+ * Used to write back VITE_API_URL after a manual backend deploy without
+ * clobbering the credentials/Cognito values the participant already set.
+ */
+export function upsertEnvVar(key, value) {
+  const line = `${key}=${value}`;
+  let contents = fs.existsSync(envFile) ? fs.readFileSync(envFile, 'utf8') : '';
+  const pattern = new RegExp(`^${key}=.*$`, 'm');
+  if (pattern.test(contents)) {
+    contents = contents.replace(pattern, line);
+  } else {
+    if (contents.length && !contents.endsWith('\n')) contents += '\n';
+    contents += `${line}\n`;
+  }
+  fs.writeFileSync(envFile, contents, 'utf8');
+}
+
 export function writeLocalEnv({ aws, vite }) {
   const region = aws.region || 'us-east-1';
   const sessionLine =

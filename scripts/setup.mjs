@@ -46,6 +46,7 @@ import { parseArgs, resolveSkip, resolveString } from './lib/args.mjs';
 import {
   envFileExists,
   loadAwsCredentials,
+  loadExternalCognito,
   hasAwsCredentials,
   sessionToken,
 } from './lib/env.mjs';
@@ -53,7 +54,8 @@ import { writeLocalEnv } from './lib/env.mjs';
 import { validateIdentity } from './lib/identity.mjs';
 import { run, runDevServer } from './lib/exec.mjs';
 import { infraDir, repoRoot } from './lib/paths.mjs';
-import { DEPLOY_ORDER, resolveFrontendConfig } from './lib/stacks.mjs';
+import { deployOrder, externalCognito, resolveFrontendConfig } from './lib/stacks.mjs';
+import { ensureBootstrapped } from './lib/bootstrap.mjs';
 import { provisionTestUser } from './lib/test-user.mjs';
 import { buildFrontend, publishToS3 } from './lib/frontend-publish.mjs';
 import { viteEnvFromConfig } from './lib/stacks.mjs';
@@ -110,6 +112,10 @@ async function main() {
 
   // ─── 2. Load + validate AWS credentials ─────────────────────────────────────
   loadAwsCredentials();
+  // Load an external Cognito pool from .env (VITE_COGNITO_* or COGNITO_*) into
+  // process.env so `npx cdk` and the deploy scripts reuse it instead of
+  // creating a new one. No-op in the original self-contained flow.
+  const usingExternalPool = loadExternalCognito();
   if (!hasAwsCredentials()) {
     log.fail('AWS workshop credentials are not set in .env.', [
       'Open .env and fill in AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY',
@@ -139,18 +145,24 @@ async function main() {
     log.skipped('--skip-deploy — skipping CDK bootstrap and deploy.');
   } else {
     log.step('🧰 Ensuring the environment is CDK-bootstrapped...');
-    await run(
-      'npx',
-      [
-        'cdk',
-        'bootstrap',
-        `aws://${identity.accountId}/${identity.region}`,
-      ],
-      { cwd: infraDir },
-    );
+    // Workshop/sandbox accounts are often pre-bootstrapped. ensureBootstrapped
+    // clears a stuck/empty CDKToolkit stack and skips bootstrap when the account
+    // already reports a usable version, avoiding the AutomaticImportNeedsRetain
+    // failure that `cdk bootstrap` throws on pre-existing resources.
+    await ensureBootstrapped({
+      accountId: identity.accountId,
+      region: identity.region,
+      infraDir,
+    });
+
+    if (usingExternalPool) {
+      log.ok(
+        `Reusing external Cognito pool ${process.env.COGNITO_USER_POOL_ID} — not deploying AuthStack.`,
+      );
+    }
 
     log.step('🚀 Deploying AWS stacks (this can take several minutes)...');
-    for (const stack of DEPLOY_ORDER) {
+    for (const stack of deployOrder()) {
       log.working(`Deploying ${stack}...`);
       await run(
         'npx',

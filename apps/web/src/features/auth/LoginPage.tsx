@@ -1,31 +1,16 @@
 import { useState } from 'react';
-import { useAuth } from 'react-oidc-context';
-import { Navigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthError } from '../../lib/auth/error-utils';
 
-interface LocationState {
-  error?: AuthError;
-}
-
 export const LoginPage = () => {
-  const { isAuthenticated, signinRedirect } = useAuth();
-  const location = useLocation();
-  const locationState = location.state as LocationState | null;
+  const navigate = useNavigate();
 
-  const [error, setError] = useState<AuthError | undefined>(locationState?.error);
-
-  if (isAuthenticated) {
-    return <Navigate to="/home" replace />;
-  }
+  // Auth is mocked: clicking "Iniciar Sesión" goes straight to /home. No real
+  // sign-in, no redirect to a hosted login.
+  const [error] = useState<AuthError | undefined>(undefined);
 
   const handleLogin = async () => {
-    setError(undefined);
-    try {
-      await signinRedirect();
-    } catch (e) {
-      console.error('signinRedirect failed:', e);
-      setError({ type: 'auth_failed', message: 'Error al iniciar sesión. Intenta de nuevo.' });
-    }
+    navigate('/home');
   };
 
   return (

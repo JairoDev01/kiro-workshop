@@ -25,18 +25,8 @@ import { ProtectedApiCard } from './ProtectedApiCard';
 
 // --- Mocks ---
 
-const ACCESS_TOKEN = 'test-token';
-
-// Minimal controllable auth mock providing the Cognito access token the card
-// reads on mount via `useAuth()`.
-const authState = {
-  user: { access_token: ACCESS_TOKEN as string | undefined },
-};
-
-vi.mock('react-oidc-context', () => ({
-  useAuth: () => authState,
-}));
-
+// Auth was removed: the card no longer reads a token or sends an Authorization
+// header. It just fetches GET /hello.
 const API_BASE = 'https://api.example.test';
 
 // Build a Response-like object for the mocked fetch using the LEGACY object
@@ -84,7 +74,6 @@ describe('ProtectedApiCard - automatic protected /hello verification', () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    authState.user = { access_token: ACCESS_TOKEN };
     vi.stubEnv('VITE_API_URL', API_BASE);
     fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
@@ -96,7 +85,7 @@ describe('ProtectedApiCard - automatic protected /hello verification', () => {
     vi.clearAllMocks();
   });
 
-  it('automatically issues a single GET /hello with Authorization: Bearer <token> on load (R22.5)', async () => {
+  it('automatically issues a single GET /hello (no Authorization header) on load', async () => {
     fetchMock.mockResolvedValue(okResponse('Hola desde el backend protegido'));
 
     render(<ProtectedApiCard />);
@@ -109,7 +98,8 @@ describe('ProtectedApiCard - automatic protected /hello verification', () => {
     expect((init.method ?? 'GET').toUpperCase()).toBe('GET');
 
     const headers = init.headers as Record<string, string>;
-    expect(headers.Authorization).toBe(`Bearer ${ACCESS_TOKEN}`);
+    // Auth removed: no bearer token is attached anymore.
+    expect(headers.Authorization).toBeUndefined();
     expect(headers.Accept).toBe('application/json');
 
     // Settle the resulting success state update.
@@ -231,10 +221,6 @@ describe('ProtectedApiCard - automatic protected /hello verification', () => {
     fireEvent.click(screen.getByRole('button', { name: /Reintentar/i }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
-    const [, retryInit] = fetchMock.mock.calls[1] as [string, RequestInit];
-    expect((retryInit.headers as Record<string, string>).Authorization).toBe(
-      `Bearer ${ACCESS_TOKEN}`,
-    );
 
     // On success the message now renders.
     expect(

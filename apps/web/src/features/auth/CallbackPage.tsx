@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAuth } from 'react-oidc-context';
+import { useAuth } from '../../lib/auth/mock-auth';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { classifyCallbackError, handleNetworkError } from '../../lib/auth/error-utils';
 

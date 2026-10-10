@@ -20,7 +20,7 @@ import { AccountMenu } from './AccountMenu';
 
 const authState = { removeUser: vi.fn() };
 
-vi.mock('react-oidc-context', () => ({
+vi.mock('../../lib/auth/mock-auth', () => ({
   useAuth: () => authState,
 }));
 

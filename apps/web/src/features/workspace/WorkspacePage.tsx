@@ -1,4 +1,4 @@
-import { useAuth } from 'react-oidc-context';
+import { useAuth } from '../../lib/auth/mock-auth';
 import { resolveUserIdentifier } from '../../lib/auth/user-utils';
 import { WorkspaceHeader } from './WorkspaceHeader';
 import { WelcomeSection } from './WelcomeSection';

@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from 'react-oidc-context';
-import { Navigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthError } from '../../lib/auth/error-utils';
 import { HeroSection } from './sections/HeroSection';
 import { WorkshopSection } from './sections/WorkshopSection';
@@ -11,29 +10,17 @@ import { SpeakerSection } from './sections/SpeakerSection';
 import { FinalCtaSection } from './sections/FinalCtaSection';
 import './LandingPage.css';
 
-interface LocationState {
-  error?: AuthError;
-}
-
 export const LandingPage = () => {
-  const { isAuthenticated, signinRedirect } = useAuth();
-  const location = useLocation();
-  const locationState = location.state as LocationState | null;
+  const navigate = useNavigate();
 
-  const [error, setError] = useState<AuthError | undefined>(locationState?.error);
-
-  if (isAuthenticated) {
-    return <Navigate to="/home" replace />;
-  }
+  // Auth has been mocked: there is no real sign-in. Clicking "Iniciar sesión"
+  // simply navigates to the (always-accessible) home workspace. We intentionally
+  // do NOT auto-redirect based on auth state so the public landing stays visible
+  // until the user explicitly chooses to enter.
+  const [error] = useState<AuthError | undefined>(undefined);
 
   const handleSignIn = async () => {
-    setError(undefined);
-    try {
-      await signinRedirect();
-    } catch (e) {
-      console.error('signinRedirect failed:', e);
-      setError({ type: 'auth_failed', message: 'Error al iniciar sesión. Intenta de nuevo.' });
-    }
+    navigate('/home');
   };
 
   return (

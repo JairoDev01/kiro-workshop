@@ -24,8 +24,8 @@
 import { parseArgs } from './lib/args.mjs';
 import { run } from './lib/exec.mjs';
 import { infraDir } from './lib/paths.mjs';
-import { DEPLOY_ORDER } from './lib/stacks.mjs';
-import { loadAwsCredentials } from './lib/env.mjs';
+import { deployOrder } from './lib/stacks.mjs';
+import { loadAwsCredentials, loadExternalCognito } from './lib/env.mjs';
 import * as log from './lib/console.mjs';
 
 function printHelp() {
@@ -37,7 +37,7 @@ function printHelp() {
   console.log('  --help    Show this help message');
   log.blank();
   console.log('Available stacks (in deploy order):');
-  for (const stack of DEPLOY_ORDER) console.log(`  ${stack}`);
+  for (const stack of deployOrder()) console.log(`  ${stack}`);
   log.blank();
 }
 
@@ -52,6 +52,9 @@ async function main() {
   // Load AWS credentials from .env so CDK can authenticate without the user
   // having to export them in every shell. Explicit shell exports still win.
   loadAwsCredentials();
+  // Honor the external Cognito pool so deployOrder() excludes AuthStack and
+  // the API stack trusts the right pool, consistent with setup.mjs.
+  loadExternalCognito();
 
   const diffOnly = Boolean(flags.diff);
   const targetStack = positionals[0];
@@ -83,7 +86,7 @@ async function main() {
   }
 
   log.step('🚀 Deploying all stacks in dependency order...');
-  for (const stack of DEPLOY_ORDER) {
+  for (const stack of deployOrder()) {
     log.blank();
     log.working(`Deploying ${stack}...`);
     await run('npx', ['cdk', 'deploy', stack, '--require-approval', 'never'], {
